@@ -22,17 +22,58 @@ app.get("/", (req, res) => {
 });
 
 //Rota Privada
-app.get("/user/:id", async(req, res)=>{
+/*
+app.get("/user/:id" , async (req, res)=>{
 
-  const id = req.params.id
+const id = req.params.id
 
-  const user = await User.findById(id,'-password')
+//Checando se o usuario existe
+const user = await User.findById(id,'-password' )
 
-  if(!user){
-    return res.status(404).json({msg:'Usuário não encontrado'})
-    }
+if(!user){
+  return res.status(404).json({msg: 'Usuario não encontrado'})
+}
+ return res.json(user);
+})
+*/
+
+app.get("/user/:id", checkToken,async (req, res) => {
+  const id = req.params.id;
+
+  // Checando se o usuário existe
+  const user = await User.findById(id, '-password')
+    .catch((error) => {
+      console.error("Erro ao buscar usuário:", error);
+      return null;
+    });
+
+  if (!user) {
+    return res.status(404).json({ msg: 'Usuário não encontrado' });
   }
-)
+  return res.json(user);
+});
+
+
+function checkToken(req,res,next){
+
+  const AuthHeader = req.headers['authorization']
+  const token = AuthHeader && AuthHeader.split(" ")[1]
+
+  if(!token){
+    return req.status(401).json({msg:'Acesso Negado!'})
+  }
+try{
+ const secret = process.env.SECRET
+
+ jwt.verify(token, secret)
+
+ next()
+
+}catch(erro){
+res.status(400).json({msg:"Token inválido!"})
+}
+
+}
 
 //Rota Registro de usuário
 const criacaoRoutes = require('./Routes/Criacao.js'); 
