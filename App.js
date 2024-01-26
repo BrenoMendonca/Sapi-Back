@@ -27,8 +27,12 @@ app.get("/user/:id", async(req, res)=>{
   const id = req.params.id
 
   const user = await User.findById(id,'-password')
-})
 
+  if(!user){
+    return res.status(404).json({msg:'Usuário não encontrado'})
+    }
+  }
+)
 
 //Rota Registro de usuário
 const criacaoRoutes = require('./Routes/Criacao.js'); 

@@ -5,7 +5,7 @@ const router = express.Router();
 const User = require('../models/user');
 
 router.post('/register', async (req, res) => {
-    const {name, email,matricula, password, confirmpassword} = req.body
+    const {name, email,matricula, password, confirmpassword,cpf} = req.body
   //Validações
   if(!name) {
     return res.status(422).json({msg:'Nome obrigatório '})
@@ -46,8 +46,9 @@ router.post('/register', async (req, res) => {
     name,
     email,
     password: passwordHash,//para deixar a senha encriptada
-    //password,
+    confirmpassword,
     matricula,
+    cpf
   })
   //59:15
   try {
