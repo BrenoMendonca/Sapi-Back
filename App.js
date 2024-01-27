@@ -53,7 +53,7 @@ app.get("/user/:id", checkToken,async (req, res) => {
   return res.json(user);
 });
 
-
+//Adicionando autorização nas rotas
 function checkToken(req,res,next){
 
   const AuthHeader = req.headers['authorization']
@@ -71,8 +71,7 @@ try{
 
 }catch(erro){
 res.status(400).json({msg:"Token inválido!"})
-}
-
+  }
 }
 
 //Rota Registro de usuário
@@ -92,7 +91,7 @@ const DbPass = process.env.PASSWORD;
 mongoose.connect(`mongodb+srv://${DbUser}:${DbPass}@cluster0.kbym7hc.mongodb.net/?retryWrites=true&w=majority`).then(()=>{
 }) .catch((erro)=> console.log(erro));
 
-  app.listen(3000,()=>{
+  app.listen(3001,()=>{
     console.log("Conectado ao banco")
   });
 

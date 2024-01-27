@@ -14,7 +14,7 @@ const User = mongoose.model('User',{
     required:true
   },
   matricula:{type: String,
-    required:true
+    required:true,
   },
   cpf:{type: String,
     required:true

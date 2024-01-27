@@ -5,7 +5,7 @@ const router = express.Router();
 const User = require('../models/user');
 
 router.post('/register', async (req, res) => {
-    const {name, email,matricula, password, confirmpassword,cpf} = req.body
+    const {name, email,matricula, password,confirmpassword,cpf} = req.body
   //Validações
   if(!name) {
     return res.status(422).json({msg:'Nome obrigatório '})
@@ -37,9 +37,29 @@ router.post('/register', async (req, res) => {
     return res.status(422).json({msg:'Matricula já cadastrada'})
   }
 
+  const CPFExists = await User.findOne({cpf:cpf})
+
+  if(CPFExists){
+    return res.status(422).json({msg:'Cpf já cadastrado'})
+  }
+
+
+  //Validações de CPF e Matricula
+  if (/^\d{7}$/.test(matricula)) {
+  } else {
+    return res.status(422).json({msg:'Matricula com números incorretos ou não numericos'});
+  }
+
+  if (/^\d{11}$/.test(cpf)) {
+  } else {
+    return res.status(422).json({msg:'Cpf com números incorretos ou não numericos'});
+  }
+
+
   //Criando senha e adicionando segurança
   const salt = await bcrypt.genSalt(12)
   const passwordHash = await bcrypt.hash(password, salt)
+
 
   // Criando usuário no banco
   const user = new User({
@@ -50,7 +70,6 @@ router.post('/register', async (req, res) => {
     matricula,
     cpf
   })
-  //59:15
   try {
     await user.save()
 
