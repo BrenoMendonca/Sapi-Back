@@ -24,7 +24,7 @@ Projeto em andamento sendo realizado pelo Laboratório de Pesquisa e Inovação 
 - ``Express``
 - ``Moogose``
   
-## ✔️ Funcionalidades 
+## 💾 Funcionalidades 
 - `Funcionalidade 1` `Cadastro de professores e coordenadores`:
 - `Funcionalidade 2` `Login e validação de usuários`:
 - `Funcionalidade 3` `Cadastro e consulta de editais para projetos de iniciação cientifica`:
