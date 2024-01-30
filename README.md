@@ -23,6 +23,7 @@ Projeto em andamento sendo realizado pelo Laboratório de Pesquisa e Inovação 
 - ``JWT``
 - ``Express``
 - ``Moogose``
+- - ``Express``
   
 ## 💾 Funcionalidades 
 - `Funcionalidade 1` `Cadastro de professores e coordenadores`:
