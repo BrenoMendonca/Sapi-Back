@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
 dotenv.config({path: './.env'});
-
+import cors from "cors";
 
 //Config JSON -- p/ que o express leia Json
 app.use(express.json());
@@ -14,6 +14,13 @@ app.use(express.json());
 //Importando Models
 const User = require('./models/user');
 
+app.options("*", cors({
+  origin: "http://localhost:3000",
+  optionsSuccessStatus: 200,
+  preflightContinue: true,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"]
+}))
 
 
 //Rota Publica
@@ -21,66 +28,24 @@ app.get("/", (req, res) => {
   res.status(200).json({msg:'Bem vindo a API Publica'})
 });
 
-//Rota Privada
-/*
-app.get("/user/:id" , async (req, res)=>{
 
-const id = req.params.id
 
-//Checando se o usuario existe
-const user = await User.findById(id,'-password' )
 
-if(!user){
-  return res.status(404).json({msg: 'Usuario não encontrado'})
-}
- return res.json(user);
-})
-*/
 
-app.get("/user/:id", checkToken,async (req, res) => {
-  const id = req.params.id;
 
-  // Checando se o usuário existe
-  const user = await User.findById(id, '-password')
-    .catch((error) => {
-      console.error("Erro ao buscar usuário:", error);
-      return null;
-    });
-
-  if (!user) {
-    return res.status(404).json({ msg: 'Usuário não encontrado' });
-  }
-  return res.json(user);
-});
-
-//Adicionando autorização nas rotas
-function checkToken(req,res,next){
-
-  const AuthHeader = req.headers['authorization']
-  const token = AuthHeader && AuthHeader.split(" ")[1]
-
-  if(!token){
-    return req.status(401).json({msg:'Acesso Negado!'})
-  }
-try{
- const secret = process.env.SECRET
-
- jwt.verify(token, secret)
-
- next()
-
-}catch(erro){
-res.status(400).json({msg:"Token inválido!"})
-  }
-}
 
 //Rota Registro de usuário
-const criacaoRoutes = require('./Routes/Criacao.js'); 
+const criacaoRoutes = require('./controllers/Login.js'); 
 app.use('/auth', criacaoRoutes);
 
 //Rota Login
-const loginRoutes = require('./Routes/Login.js'); 
+const loginRoutes = require('./controllers/Login.js'); 
 app.use('/auth', loginRoutes);
+
+//Rota User 
+const UserVerify = require('./controllers/User.js');
+app.use('/user', UserVerify)
+
 
 
 
