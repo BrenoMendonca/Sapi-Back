@@ -15,7 +15,7 @@ const Edital = mongoose.model('edital',{
     dataFinal:{type: Date,
         required:true
     },
-    omitbjetivo:{type:String,
+    objetivo:{type:String,
         required:true
     },
     publicoAlvo:{type:String,

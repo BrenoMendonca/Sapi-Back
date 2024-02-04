@@ -8,7 +8,7 @@ const User = mongoose.model('User',{
     required:true
   },
   password:{type: String,
-    required:true
+    required:true   
   },
   confirmpassword:{type: String,
     required:true
