@@ -11,6 +11,9 @@ router.post('/login', async (req, res) => {
     const{matricula, password} = req.body
     //Validações
   
+    if(!matricula && !password) {
+      return res.status(422).json({msg:'Credenciais obrigatórias '})
+    }
     if(!matricula) {
       return res.status(422).json({msg:'Matricula obrigatória '})
     }
@@ -20,15 +23,26 @@ router.post('/login', async (req, res) => {
    
   
     //Checando se a matricula está cadastrada
-    const user = await User.findOne({matricula:matricula})
+    const user = await User.findOne({matricula:matricula});
+    
+    /*
+    try {
+      const user = await User.findOne({matricula:matricula});
+      const { name } = user
+    } catch (error) {
+      return res.status(422).json({msg:'Usuário não encontrado '});
+         }
+    */
+    
   
     if(!user){
       return res.status(422).json({msg:'Matricula não cadastrada'})
   }
     //Checando se a senha está correta sem a validação do bcrypt
     const checkPassword = await bcrypt.compare(password, user.password)
-    //const checkPassword = await User.findOne({password:password})
     
+    //const checkPassword = await User.findOne({password:password})
+    console.log(checkPassword)
     if(!checkPassword){
       return res.status(404).json({msg:'Senha invalida'})
     }
@@ -42,9 +56,10 @@ router.post('/login', async (req, res) => {
         },
         secret,
       )
-        res.status(200).json({msg:'Autenticação realizada com sucesso', token})
+        const { name } = user
+        res.status(200).json({msg:'Autenticação realizada com sucesso ', user: { token, matricula, name }})
     }catch(erro){
-      console.log(error)
+      console.log(erro)
   
     }
   

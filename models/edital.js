@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
+const {Schema} = mongoose;
 
-
-const Edital = mongoose.model('edital',{
+const editalSchema = new Schema({
 
     nameEdital:{type: String,
         required:true
@@ -24,7 +24,11 @@ const Edital = mongoose.model('edital',{
     status:{type:Number,
         required:true
     }
+},
+{
+    timestamps:true
+}
+);
 
-})
-
+const Edital = mongoose.model('Edital', editalSchema);
 module.exports = Edital

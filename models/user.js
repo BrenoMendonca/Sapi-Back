@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
+const {Schema} = mongoose;
 
-const User = mongoose.model('User',{
+const userSchema = new Schema({
+  
   name:{type: String,
-        required:true
+    required:true
   },
   email:{type: String,
     required:true
@@ -18,7 +20,12 @@ const User = mongoose.model('User',{
   },
   cpf:{type: String,
     required:true
-  },
-})
-//Adicionar validação numerica na String de matricula
-module.exports = User
+  }
+},
+{
+  timestamps: true
+}
+);
+
+const User = mongoose.model('User', userSchema);
+module.exports = User;
