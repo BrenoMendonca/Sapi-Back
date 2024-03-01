@@ -57,6 +57,7 @@ router.post('/login', async (req, res) => {
         secret,
       )
         const { name } = user
+        
         res.status(200).json({msg:'Autenticação realizada com sucesso ', user: { token, matricula, name }})
     }catch(erro){
       console.log(erro)

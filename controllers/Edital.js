@@ -9,13 +9,24 @@ router.post("/edital", async (req, res)=>{
     if(!nameEdital || !numeroEdital){
         return res.status(422).json({msg:'Campo(s) não informados '})
     }
-    const EditalExists = await Edital.findOne({numeroEdital:numeroEdital})
+
+    //Validação de dados repetidos
+
+    //const EditalExists = await Edital.findOne({numeroEdital:numeroEdital}) 
+    const [editalByNumero, editalByName] = await Promise.all([
+        Edital.findOne({ numeroEdital: numeroEdital }),
+        Edital.findOne({ nameEdital: nameEdital })
+    ]);
+    
+    const EditalExists = editalByNumero && editalByName;
 
     if(EditalExists){
-        return res.status(422).json({msg:'Edital já cadastrado com esse numero'})
+        return res.status(422).json({msg:'Edital já cadastrado com esse numero e (ou) nome'})
     }
 
-    if(dataInicio > dataFinal || dataInicio == dataInicio ){
+    //Validação de datas
+    
+    if(dataInicio > dataFinal || dataInicio == dataFinal ){
         return res.status(422).json({msg:'Data final não compativel'})
     }
 
