@@ -71,7 +71,11 @@ const UserVerify = require('./controllers/User.js');
 app.use('/user', UserVerify)
 
 //Rota Criacao Edital
-const criacaoEdital = require('./controllers/Edital.js');
+const getEdital= require('./controllers/Edital.js');
+app.use('/getEdital', getEdital)
+
+//Rota puxar editais
+const criacaoEdital = require('./controllers/CriacaoEdital.js')
 app.use('/criacao', criacaoEdital)
 
 
