@@ -1,6 +1,8 @@
 const express = require('express');
 const Edital  = require('../models/edital');
+const moment = require('moment');
 const router = express.Router();
+
 
 router.post("/edital", async (req, res)=>{
     const{nameEdital, numeroEdital, dataInicio, dataFinal, objetivo,publicoAlvo, status} = req.body
@@ -30,17 +32,18 @@ router.post("/edital", async (req, res)=>{
         return res.status(422).json({msg:'Data final não compativel'})
     }
 
-
+    const formattedDataInicio = moment(dataInicio).format('L');
+    const formattedDataFinal = moment(dataFinal).format('L');
 
     // Criação de uma instância do modelo Edital
     const novoEdital = new Edital({
         nameEdital,
         numeroEdital,
-        dataInicio,
-        dataFinal,
+        dataInicio: formattedDataInicio,
+        dataFinal: formattedDataFinal,
         objetivo,
         publicoAlvo,
-        status
+        status: 1
     });
 
     try {

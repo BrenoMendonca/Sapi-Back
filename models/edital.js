@@ -9,17 +9,17 @@ const editalSchema = new Schema({
     numeroEdital:{type: Number,
         required:true
     },
-    dataInicio:{type: Date,
+    dataInicio:{type: String,
         required:true
     },
-    dataFinal:{type: Date,
+    dataFinal:{type: String,
         required:true
     },
     objetivo:{type:String,
         required:true
     },
     publicoAlvo:{type:String,
-        required:true
+    
     },
     status:{type:Number,
         required:true
