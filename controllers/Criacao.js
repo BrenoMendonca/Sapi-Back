@@ -73,7 +73,7 @@ router.post('/register', async (req, res) => {
   try {
     await user.save()
 
-    res.status(201).json({msg:'Usuario criado com sucesso!'})
+    res.status(201).json({ msg:'Usuario criado com sucesso!' })
   }catch(error) {
       console.log(error)
       res.status(500).json({msg:'Aconteceu um erro no servidor'})

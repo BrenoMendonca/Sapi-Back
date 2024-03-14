@@ -7,6 +7,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
 dotenv.config({path: './.env'});
+console.log(process.env.USER)
+console.log(process.env.PASSWORD)
 
 
 //Config JSON -- p/ que o express leia Json
@@ -80,8 +82,8 @@ app.use('/criacao', criacaoEdital)
 
 
 //Credenciais
-const DbUser = process.env.USER;
-const DbPass = process.env.PASSWORD;
+const DbUser = process.env.DB_USER;
+const DbPass = process.env.DB_PASSWORD;
 //Conectando ao banco
 mongoose.connect(`mongodb+srv://${DbUser}:${DbPass}@cluster0.kbym7hc.mongodb.net/?retryWrites=true&w=majority`).then(()=>{
 }) .catch((erro)=> console.log(erro));
