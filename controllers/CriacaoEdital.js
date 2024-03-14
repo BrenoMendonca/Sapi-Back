@@ -43,7 +43,8 @@ router.post("/edital", async (req, res)=>{
         dataFinal: formattedDataFinal,
         objetivo,
         publicoAlvo,
-        status: 1
+        status: 1,
+        requisitosEdital: [] //criação de um array vazio para o prof responsável adicionar depois na página específica do edital
     });
 
     try {

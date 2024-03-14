@@ -23,6 +23,9 @@ const editalSchema = new Schema({
     },
     status:{type:Number,
         required:true
+    },
+    requisitosEdital:{type:Array,
+
     }
 },
 {
