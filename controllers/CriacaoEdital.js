@@ -43,7 +43,7 @@ router.post("/edital", async (req, res)=>{
         dataFinal: formattedDataFinal,
         objetivo,
         publicoAlvo,
-        status: 1
+        status: 1,
     });
 
     try {
