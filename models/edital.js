@@ -19,7 +19,7 @@ const editalSchema = new Schema({
         required:true
     },
     publicoAlvo:{type:String,
-    },
+    },  
     criador:{type:String,
     },
     status:{type:Number,

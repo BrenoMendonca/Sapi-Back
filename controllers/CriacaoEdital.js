@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 router.post("/edital", async (req, res)=>{
-    const{nameEdital, numeroEdital, dataInicio, dataFinal, objetivo,publicoAlvo, status} = req.body
+    const{nameEdital, numeroEdital, dataInicio, dataFinal, objetivo,publicoAlvo, requisitosEdital} = req.body
     //Validações
 
     if(!nameEdital || !numeroEdital){
@@ -27,13 +27,19 @@ router.post("/edital", async (req, res)=>{
     }
 
     //Validação de datas
+    const dataInicioMoment = moment(dataInicio, 'DD/MM/YYYY');
+    const dataFinalMoment = moment(dataFinal, 'DD/MM/YYYY');
     
-    if(dataInicio > dataFinal || dataInicio == dataFinal ){
-        return res.status(422).json({msg:'Data final não compativel'})
+    if (!dataInicioMoment.isValid() || !dataFinalMoment.isValid()) {
+        return res.status(422).json({ msg: 'Formato de data inválido' });
     }
 
-    const formattedDataInicio = moment(dataInicio).format('L');
-    const formattedDataFinal = moment(dataFinal).format('L');
+    if (dataInicioMoment.isSameOrAfter(dataFinalMoment)) {
+        return res.status(422).json({ msg: 'A data final deve ser posterior à data de início' });
+    }
+
+    const formattedDataInicio = moment(dataInicioMoment).locale('pt-br').format('L');
+    const formattedDataFinal = moment(dataFinalMoment).locale('pt-br').format('L');
 
     // Criação de uma instância do modelo Edital
     const novoEdital = new Edital({
@@ -44,7 +50,7 @@ router.post("/edital", async (req, res)=>{
         objetivo,
         publicoAlvo,
         status: 1,
-        requisitosEdital: [] //criação de um array vazio para o prof responsável adicionar depois na página específica do edital
+        requisitosEdital //criação de um array vazio para o prof responsável adicionar depois na página específica do edital
     });
 
     try {
