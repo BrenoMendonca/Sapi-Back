@@ -4,8 +4,14 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/user');
 
+/*typeOfUser:{
+  1: prof
+  2: profAvaliador
+  3: superUser (Mirtha)
+}*/
+
 router.post('/register', async (req, res) => {
-    const {name, email,matricula, password,confirmpassword,cpf} = req.body
+    const { name, email, matricula, password, confirmpassword, cpf, typeOfUser } = req.body
     //Validações
     if(!name) {
       return res.status(422).json({msg:'Nome obrigatório '})
@@ -61,15 +67,24 @@ router.post('/register', async (req, res) => {
   const passwordHash = await bcrypt.hash(password, salt)
 
 
+  // Validação de tipo de usuário
+  if (typeof typeOfUser !== 'undefined' && ![1, 2, 3].includes(typeOfUser)) {
+    return res.status(422).json({ msg: 'Tipo de usuário inválido' });
+  }
+
+  // Definir typeOfUser como 1 se não for fornecido no corpo da requisição
+  const finalTypeOfUser = typeof typeOfUser !== 'undefined' ? typeOfUser : 1;
   // Criando usuário no banco
   const user = new User({
     name,
     email,
-    password: passwordHash,//para deixar a senha encriptada
+    password: passwordHash, // para deixar a senha encriptada
     confirmpassword,
     matricula,
-    cpf
-  })
+    cpf,
+    typeOfUser: finalTypeOfUser
+  });
+
   try {
     await user.save()
 

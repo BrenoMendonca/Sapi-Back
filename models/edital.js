@@ -26,7 +26,6 @@ const editalSchema = new Schema({
         required:true
     },
     requisitosEdital:{type:Array,
-
     }
 },
 {

@@ -20,6 +20,8 @@ const userSchema = new Schema({
   },
   cpf:{type: String,
     required:true
+  },
+  typeOfUser:{type: Number
   }
 },
 {

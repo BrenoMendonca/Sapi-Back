@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 router.post("/edital", async (req, res)=>{
-    const{nameEdital, numeroEdital, dataInicio, dataFinal, objetivo,publicoAlvo, requisitosEdital} = req.body
+    const{ nameEdital, numeroEdital, dataInicio, dataFinal, objetivo,publicoAlvo, requisitosEdital } = req.body
     //Validações
 
     if(!nameEdital || !numeroEdital){
@@ -50,7 +50,7 @@ router.post("/edital", async (req, res)=>{
         objetivo,
         publicoAlvo,
         status: 1,
-        requisitosEdital //criação de um array vazio para o prof responsável adicionar depois na página específica do edital
+        requisitosEdital
     });
 
     try {
