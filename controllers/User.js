@@ -23,10 +23,6 @@ router.get("/search-users", async (req, res) => {
     // Realize a consulta no banco de dados com base na matrícula
     const users = await User.find({ matricula: { $regex: mat, $options: 'i' } });
 
-    // Verifique se há resultados
-    if (users.length === 0) {
-      return res.status(404).json({ msg: 'Nenhum usuário encontrado' });
-    }
     // Retorne o usuário encontrado na resposta
     res.json(users);
   } catch (error) {
