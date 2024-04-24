@@ -6,8 +6,7 @@ const User = require('../models/user');
 
 /*typeOfUser:{
   1: prof
-  2: profAvaliador
-  3: superUser (Mirtha)
+  2: superUser (Mirtha)
 }*/
 
 router.post('/register', async (req, res) => {
@@ -68,7 +67,7 @@ router.post('/register', async (req, res) => {
 
 
   // Validação de tipo de usuário
-  if (typeof typeOfUser !== 'undefined' && ![1, 2, 3].includes(typeOfUser)) {
+  if (typeof typeOfUser !== 'undefined' && ![1, 2].includes(typeOfUser)) {
     return res.status(422).json({ msg: 'Tipo de usuário inválido' });
   }
 

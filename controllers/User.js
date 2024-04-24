@@ -6,8 +6,7 @@ const User = require('../models/user');
 
 /*typeOfUser:{
   1: prof
-  2: profAvaliador
-  3: superUser (Mirtha)
+  2: superUser (Mirtha)
 }*/
 
 // ROTA PARA BUSCA DE USUÁRIO POR MATRÍCULA
