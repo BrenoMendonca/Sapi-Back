@@ -28,6 +28,10 @@ const editalSchema = new Schema({
     requisitosEdital:{type:Array,
     },
     profsAvaliadores:{type:Array
+    },
+    isValidated:{
+        type:Boolean,
+        default: false,
     }
 },
 {

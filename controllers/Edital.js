@@ -103,5 +103,34 @@ router.delete('/remove-prof-avaliador/:id', async (req,res) => {
     }
 })
 
+router.patch('/validate-requisitos/:id', async (req, res) => {
+    try{
+        const { id } = req.params
+        const edital = await Edital.findById(id)
+
+        if (!edital) {
+            return res.status(404).json({ msg: 'Edital não encontrado.' });
+        }
+
+        if (edital.requisitosEdital && edital.isValidated === false) { //aqui vamos fazer uma mudança após a criação do model de aplicação do professor. Daí, vamos poder verificar se os requisitos da aplicação do professor vão estar iguais ao requisito do edital
+            edital.isValidated
+            await edital.save();
+
+            return res.status(200).json({ msg: 'Requisitos do edital validados com sucesso.' });
+        } 
+
+        if (edital.requisitosEdital && edital.isValidated) {
+            return res.status(200).json({ msg: 'Requisitos do edital já haviam sido validados. '})
+        }
+
+        if (!edital.requisitosEdital) {
+            return res.status(400).json({ msg: 'A aplicação não contém todos os requisitos do edital.' })
+        }
+
+    } catch (error) {
+        console.error('Erro ao validar os requisitos:', error);
+        res.status(500).json({ msg: 'Erro interno do servidor' });
+    }
+})
 
 module.exports = router;

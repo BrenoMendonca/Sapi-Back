@@ -10,7 +10,6 @@ dotenv.config({path: './.env'});
 console.log(process.env.USER)
 console.log(process.env.PASSWORD)
 
-
 //Config JSON -- p/ que o express leia Json
 app.use(express.json());
 
