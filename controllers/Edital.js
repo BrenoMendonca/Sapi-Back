@@ -113,7 +113,7 @@ router.patch('/validate-requisitos/:id', async (req, res) => {
         }
 
         if (edital.requisitosEdital && edital.isValidated === false) { //aqui vamos fazer uma mudança após a criação do model de aplicação do professor. Daí, vamos poder verificar se os requisitos da aplicação do professor vão estar iguais ao requisito do edital
-            edital.isValidated
+            edital.isValidated === true
             await edital.save();
 
             return res.status(200).json({ msg: 'Requisitos do edital validados com sucesso.' });

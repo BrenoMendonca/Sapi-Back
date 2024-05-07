@@ -30,7 +30,7 @@ app.use(cors({
   origin: 'http://localhost:3000',  // Origem do seu frontend
   optionsSuccessStatus: 200,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'], // Adicione cabeçalhos permitidos, se necessário
 }));
 
