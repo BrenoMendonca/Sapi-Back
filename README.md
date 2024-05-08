@@ -9,7 +9,7 @@ Projeto em andamento sendo realizado pelo Laboratório de Pesquisa e Inovação 
 ## 🚀 Equipe envolvida
 - Professor Daniel Almeida Chagas
 - Bolsista Breno Mendonça
-- Bolsista André Araújo
+- Bolsista Ricardo Delgado
 
 
 ## ✔️ Tecnologias utilizadas

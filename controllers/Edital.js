@@ -113,7 +113,7 @@ router.patch('/validate-requisitos/:id', async (req, res) => {
         }
 
         if (edital.requisitosEdital && edital.isValidated === false) { //aqui vamos fazer uma mudança após a criação do model de aplicação do professor. Daí, vamos poder verificar se os requisitos da aplicação do professor vão estar iguais ao requisito do edital
-            edital.isValidated === true
+            edital.isValidated = true
             await edital.save();
 
             return res.status(200).json({ msg: 'Requisitos do edital validados com sucesso.' });
@@ -132,5 +132,28 @@ router.patch('/validate-requisitos/:id', async (req, res) => {
         res.status(500).json({ msg: 'Erro interno do servidor' });
     }
 })
+
+router.patch('/invalidate-requisitos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const edital = await Edital.findById(id);
+
+        if (!edital) {
+            return res.status(404).json({ msg: 'Edital não encontrado.' });
+        }
+
+        if (edital.isValidated === false) {
+            return res.status(200).json({ msg: 'Os requisitos do edital já estão desvalidados.' });
+        }
+
+        edital.isValidated = false;
+        await edital.save();
+
+        return res.status(200).json({ msg: 'Requisitos do edital desvalidados com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao desvalidar os requisitos:', error);
+        res.status(500).json({ msg: 'Erro interno do servidor' });
+    }
+});
 
 module.exports = router;
