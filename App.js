@@ -79,6 +79,8 @@ app.use('/getEdital', getEdital)
 const criacaoEdital = require('./controllers/CriacaoEdital.js')
 app.use('/criacao', criacaoEdital)
 
+const submissao = require('./controllers/Submissao.js')
+app.use('/submissao', submissao)
 
 //Credenciais
 const DbUser = process.env.DB_USER;

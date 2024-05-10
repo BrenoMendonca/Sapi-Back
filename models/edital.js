@@ -29,6 +29,10 @@ const editalSchema = new Schema({
     },
     profsAvaliadores:{type:Array
     },
+    submissoes: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Submissao'
+    }],
     isValidated:{
         type:Boolean,
         default: false,
