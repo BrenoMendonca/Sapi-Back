@@ -8,34 +8,39 @@ const router = express.Router();
 //CRIAR SUBMISSÃO
 router.post('/submissao', async (req, res) => {
     try {
-        const { matricula, numeroEdital, title, description } = req.body;
+        const { matricula, edital, title, description } = req.body;
 
-        if (!matricula || !numeroEdital || !title) {
+        if (!matricula || !edital || !title || !description) {
             return res.status(422).json({ msg: 'Dados de entrada incompletos.' });
         }
 
         const prof = await User.findOne({ matricula });
-        const edital = await Edital.findOne({ numeroEdital });
 
         if (!prof) {
             return res.status(422).json({ msg: 'Professor não encontrado ou inexistente.' });
         }
 
-        if (!edital) {
+        if (!mongoose.Types.ObjectId.isValid(edital)) {
+            return res.status(422).json({ msg: 'ID do edital inválido.' });
+        }
+
+        const editalDoc = await Edital.findById(edital);
+
+        if (!editalDoc) {
             return res.status(422).json({ msg: 'Edital não encontrado ou inexistente.' });
         }
 
         const submission = new Submissao({
             prof: prof._id,
-            edital: edital._id,
+            edital: editalDoc._id,
             title,
             description
         });
 
-        await submission.save();
-
-        edital.submissoes.push(submission._id);
-        await edital.save();
+        await submission.save()
+        
+        editalDoc.submissoes.push(submission._id);
+        await editalDoc.save();
 
         return res.status(201).json(submission);
     } catch (e) {
