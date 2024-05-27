@@ -42,7 +42,7 @@ router.post('/submissao', async (req, res) => {
         editalDoc.submissoes.push(submission._id);
         await editalDoc.save();
 
-        return res.status(201).json(submission);
+        return res.status(201).json({ msg: 'Submissão criada com sucesso.' })
     } catch (e) {
         return res.status(500).json({ msg: 'Erro interno do servidor.' , error: e })    }
 })
@@ -74,6 +74,8 @@ router.get('/submissoes/:idSubmissao', async (req, res) => {
         }
         
         const submissao = await Submissao.findById(idSubmissao)
+            .populate('prof')
+            .populate('edital')
 
         if (!submissao) {
             return res.status(404).json({ msg: 'Submissão não encontrada.' })
