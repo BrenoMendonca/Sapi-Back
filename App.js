@@ -86,6 +86,8 @@ app.use('/', submissao)
 const DbUser = process.env.DB_USER;
 const DbPass = process.env.DB_PASSWORD;
 //Conectando ao banco
+console.log(DbUser)
+console.log(DbPass)
 mongoose.connect(`mongodb+srv://${DbUser}:${DbPass}@cluster0.kbym7hc.mongodb.net/?retryWrites=true&w=majority`).then(()=>{
 }) .catch((erro)=> console.log(erro));
 

@@ -47,6 +47,25 @@ router.get("/:id",async (req, res) => {
     return res.json(user);
   });
   
+//ROTA PARA RETORNAR AS INFORMAÇÕES UM ÚNICO USUÁRIO POR MATRICULA
+router.get('/matricula/:matricula', async (req, res) => {
+  try {
+    const { matricula } = req.params;
+    const professor = await User.findOne({ matricula: matricula }); // Consulta o professor pela matrícula
+
+    if (professor) {
+      res.json({
+        matricula: professor.matricula,
+        name: professor.name,
+      });
+    } else {
+      res.status(404).json({ msg: 'Professor não encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ msg: 'Erro ao consultar o Professor' });
+  }
+});
+
   //Adicionando autorização nas rotas
 function checkToken(req,res,next){
   const AuthHeader = req.headers['authorization']

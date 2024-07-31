@@ -50,7 +50,7 @@ router.post('/register', async (req, res) => {
 
 
   //Validações de CPF e Matricula
-  if (/^\d{7}$/.test(matricula)) {
+  if (/^\d{9}$/.test(matricula)) {
   } else {
     return res.status(422).json({msg:'Matricula com números incorretos ou não numericos'});
   }
