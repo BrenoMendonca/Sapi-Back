@@ -33,10 +33,7 @@ const editalSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Submissao'
     }],
-    isValidated:{
-        type:Boolean,
-        default: false,
-    }
+
 },
 {
     timestamps:true

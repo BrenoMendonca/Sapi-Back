@@ -20,6 +20,11 @@ const submissaoSchema = new Schema({
     type: String,
     required: true
   },
+  areReqsValidated: {
+    type: Boolean,
+    required: true,
+    default: false,
+  }
 },
 {
   timestamps: true

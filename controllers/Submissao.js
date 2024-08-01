@@ -87,4 +87,50 @@ router.get('/submissoes/:idSubmissao', async (req, res) => {
     }
 })
 
+router.patch('/submissoes/validate/:idSubmissao', async (req, res) => {
+    try {
+        const { idSubmissao } = req.params;
+        const submission = await Submissao.findById(idSubmissao);
+
+        if (!submission) {
+            return res.status(404).json({ msg: 'Submissão não encontrada.' });
+        }
+
+        if (!submission.areReqsValidated) { 
+            submission.areReqsValidated = true;
+            await submission.save();
+
+            return res.status(200).json({ msg: 'Requisitos do edital validados com sucesso.' });
+        } 
+
+        return res.status(202).json({ msg: 'Requisitos do edital já haviam sido validados.' });
+    } catch (error) {
+        console.error('Erro ao validar os requisitos:', error);
+        res.status(500).json({ msg: 'Erro interno do servidor' });
+    }
+});
+
+router.patch('/submissoes/invalidate/:idSubmissao', async (req, res) => {
+    try {
+        const { idSubmissao } = req.params;
+        const submission = await Submissao.findById(idSubmissao);
+
+        if (!submission) {
+            return res.status(404).json({ msg: 'Submissão não encontrada.' });
+        }
+
+        if (submission.areReqsValidated) { 
+            submission.areReqsValidated = false;
+            await submission.save();
+
+            return res.status(200).json({ msg: 'Requisitos do edital invalidados.' });
+        } 
+
+        return res.status(202).json({ msg: 'Requisitos do edital ainda não foram validados.' });
+    } catch (error) {
+        console.error('Erro ao invalidar os requisitos:', error);
+        res.status(500).json({ msg: 'Erro interno do servidor' });
+    }
+});
+
 module.exports = router;
