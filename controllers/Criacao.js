@@ -10,7 +10,7 @@ const User = require('../models/user');
 }*/
 
 router.post('/register', async (req, res) => {
-    const { name, email, matricula, password, confirmpassword, cpf, typeOfUser } = req.body
+    const { name, email, matricula, password, confirmpassword, cpf, typeOfUser, curso } = req.body
     //Validações
     if(!name) {
       return res.status(422).json({msg:'Nome obrigatório '})
@@ -25,9 +25,11 @@ router.post('/register', async (req, res) => {
       return res.status(422).json({msg:'Senha obrigatória '})
     }
     if(password !== confirmpassword){
-    return res.status(422).json({msg:'As senhas devem ser iguais'})
+    return res.status(422).json({msg:'As senhas devem ser iguais '})
     }
-
+    if(!curso) {
+      return res.status(422).json({msg:'Curso não informado '})
+    }
 
   //Checando se o usuário existe
   const EmailExists = await User.findOne({email:email})
@@ -81,7 +83,8 @@ router.post('/register', async (req, res) => {
     confirmpassword,
     matricula,
     cpf,
-    typeOfUser: finalTypeOfUser
+    typeOfUser: finalTypeOfUser,
+    curso
   });
 
   try {

@@ -22,6 +22,9 @@ const userSchema = new Schema({
     required:true
   },
   typeOfUser:{type: Number
+  },
+  curso:{
+    type: String
   }
 },
 {
