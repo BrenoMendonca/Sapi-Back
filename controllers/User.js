@@ -5,8 +5,10 @@ const router = express.Router();
 const User = require('../models/user');
 
 /*typeOfUser:{
-  1: prof
-  2: superUser (Mirtha)
+  0: prof
+  1: prof mestre
+  2: prof doutor
+  100: admin
 }*/
 
 // ROTA PARA BUSCA DE USUÁRIO POR MATRÍCULA

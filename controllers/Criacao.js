@@ -4,10 +4,12 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/user');
 
-/*typeOfUser:{
-  1: prof
-  2: superUser (Mirtha)
-}*/
+/* typeOfUser:{
+  0: prof
+  1: prof mestre
+  2: prof doutor
+  100: admin
+} */
 
 router.post('/register', async (req, res) => {
     const { name, email, matricula, password, confirmpassword, cpf, typeOfUser, curso } = req.body
@@ -69,7 +71,7 @@ router.post('/register', async (req, res) => {
 
 
   // Validação de tipo de usuário
-  if (typeof typeOfUser !== 'undefined' && ![1, 2].includes(typeOfUser)) {
+  if (typeof typeOfUser !== 'undefined' && !['0', '1', '2', '100'].includes(typeOfUser)) {
     return res.status(422).json({ msg: 'Tipo de usuário inválido' });
   }
 
