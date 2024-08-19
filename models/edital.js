@@ -6,7 +6,7 @@ const editalSchema = new Schema({
     nameEdital:{type: String,
         required:true
     }, 
-    numeroEdital:{type: Number,
+    numeroEdital:{type: String,
         required:true
     },
     dataInicio:{type: String,
@@ -33,6 +33,7 @@ const editalSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Submissao'
     }],
+    linkEdital: {type: String, required: true}
 
 },
 {

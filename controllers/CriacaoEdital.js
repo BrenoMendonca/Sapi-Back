@@ -5,10 +5,10 @@ const router = express.Router();
 
 
 router.post("/edital", async (req, res)=>{
-    const{ nameEdital, numeroEdital, dataInicio, dataFinal, objetivo,publicoAlvo, requisitosEdital, profsAvaliadores } = req.body
+    const{ nameEdital, numeroEdital, dataInicio, dataFinal, objetivo,publicoAlvo, requisitosEdital, profsAvaliadores, linkEdital } = req.body
     //Validações
 
-    if(!nameEdital || !numeroEdital){
+    if(!nameEdital || !numeroEdital || !linkEdital){
         return res.status(422).json({msg:'Campo(s) não informados '})
     }
 
@@ -51,7 +51,8 @@ router.post("/edital", async (req, res)=>{
         publicoAlvo,
         status: 1,
         requisitosEdital,
-        profsAvaliadores: []
+        profsAvaliadores: [],
+        linkEdital
     });
 
     try {

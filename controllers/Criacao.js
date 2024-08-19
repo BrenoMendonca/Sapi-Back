@@ -12,7 +12,7 @@ const User = require('../models/user');
 } */
 
 router.post('/register', async (req, res) => {
-    const { name, email, matricula, password, confirmpassword, cpf, typeOfUser, curso } = req.body
+    const { name, email, matricula, password, cpf, typeOfUser, curso } = req.body
     //Validações
     if(!name) {
       return res.status(422).json({msg:'Nome obrigatório '})
@@ -26,9 +26,7 @@ router.post('/register', async (req, res) => {
     if(!password) {
       return res.status(422).json({msg:'Senha obrigatória '})
     }
-    if(password !== confirmpassword){
-    return res.status(422).json({msg:'As senhas devem ser iguais '})
-    }
+    
     if(!curso) {
       return res.status(422).json({msg:'Curso não informado '})
     }
@@ -82,7 +80,6 @@ router.post('/register', async (req, res) => {
     name,
     email,
     password: passwordHash, // para deixar a senha encriptada
-    confirmpassword,
     matricula,
     cpf,
     typeOfUser: finalTypeOfUser,

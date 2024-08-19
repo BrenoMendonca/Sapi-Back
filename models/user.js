@@ -12,16 +12,18 @@ const userSchema = new Schema({
   password:{type: String,
     required:true   
   },
-  confirmpassword:{type: String,
-    required:true
-  },
+  
   matricula:{type: String,
     required:true,
   },
   cpf:{type: String,
     required:true
   },
-  typeOfUser:{type: Number
+  curso:{
+    type: String
+  },
+  typeOfUser:{
+    type: Number,
   }
 },
 {

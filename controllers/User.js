@@ -5,9 +5,8 @@ const router = express.Router();
 const User = require('../models/user');
 
 /*typeOfUser:{
-  0: prof
-  1: prof mestre
-  2: prof doutor
+  0: prof doutor
+  1: coordenador
   100: admin
 }*/
 
@@ -22,7 +21,13 @@ router.get("/search-users", async (req, res) => {
     }
 
     // Realize a consulta no banco de dados com base na matrícula
-    const users = await User.find({ matricula: { $regex: mat, $options: 'i' } });
+    // Use regex para permitir buscas parciais e ignore espaços extras
+    const users = await User.find({ 
+      matricula: { 
+        $regex: `^${mat.trim()}`, 
+        $options: 'i' 
+      },
+    });
 
     // Retorne o usuário encontrado na resposta
     res.json(users);
@@ -31,6 +36,7 @@ router.get("/search-users", async (req, res) => {
     res.status(500).json({ msg: 'Erro interno do servidor' });
   }
 });
+
 
 //ROTA PARA RETORNAR AS INFORMAÇÕES UM ÚNICO USUÁRIO
 router.get("/:id",async (req, res) => {
