@@ -24,6 +24,15 @@ const submissaoSchema = new Schema({
     type: Boolean,
     required: true,
     default: false,
+  },
+  status: {
+    type: String,
+    enum: ['pendente', 'aprovada', 'reprovada'],
+    default: 'pendente',
+  },
+  feedback: {
+    type: String,
+    default: ''
   }
 },
 {

@@ -133,4 +133,85 @@ router.patch('/submissoes/invalidate/:idSubmissao', async (req, res) => {
     }
 });
 
+// Aprovar Submissão
+router.patch('/submissoes/approve/:idSubmissao', async (req, res) => {
+    try {
+        const { idSubmissao } = req.params;
+        const { feedback } = req.body;
+
+        const submissao = await Submissao.findById(idSubmissao);
+
+        if (!submissao) {
+            return res.status(404).json({ msg: 'Submissão não encontrada.' });
+        }
+
+        if (submissao.status === 'aprovada') {
+            return res.status(400).json({ msg: 'Submissão já aprovada.' });
+        }
+       
+        submissao.status = 'aprovada';
+        submissao.feedback = feedback || '';
+        await submissao.save();
+
+        res.status(200).json({ msg: 'Submissão aprovada com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao aprovar submissão:', error);
+        res.status(500).json({ msg: 'Erro interno do servidor' });
+    }
+});
+
+// Reprovar Submissão
+router.patch('/submissoes/disapprove/:idSubmissao', async (req, res) => {
+    try {
+        const { idSubmissao } = req.params;
+        const { feedback } = req.body;
+
+        const submissao = await Submissao.findById(idSubmissao);
+
+        if (!submissao) {
+            return res.status(404).json({ msg: 'Submissão não encontrada.' });
+        }
+
+        if (submissao.status === 'reprovada') {
+            return res.status(400).json({ msg: 'Submissão já reprovada.' });
+        }
+        if (feedback === '' || !feedback) {
+            return res.status(400).json({ msg: 'Para reprovar a submissão, é necessário justificar a reprovação.' });
+        }
+        submissao.status = 'reprovada';
+        submissao.feedback = feedback;
+        await submissao.save();
+
+        res.status(200).json({ msg: 'Submissão reprovada com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao reprovar submissão:', error);
+        res.status(500).json({ msg: 'Erro interno do servidor' });
+    }
+});
+
+router.patch('/submissoes/reevaluate/:idSubmissao', async (req, res) => {
+    try {
+        const { idSubmissao } = req.params;
+
+        const submissao = await Submissao.findById(idSubmissao);
+
+        if (!submissao) {
+            return res.status(404).json({ msg: 'Submissão não encontrada.' });
+        }
+
+        if (submissao.status === 'pendente') {
+            return res.status(400).json({ msg: 'Submissão já está pendente de avaliação.' });
+        }
+       
+        submissao.status = 'pendente';
+        submissao.feedback = '';
+        await submissao.save();
+
+        res.status(200).json({ msg: 'Submissão deve ser reavaliada.' });
+    } catch (error) {
+        console.error('Erro ao aprovar submissão:', error);
+        res.status(500).json({ msg: 'Erro interno do servidor' });
+    }
+});
+
 module.exports = router;
