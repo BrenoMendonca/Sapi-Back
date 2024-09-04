@@ -98,12 +98,13 @@ function checkToken(req,res,next){
 //ROTA PARA RETORNAR TODOS OS USUÁRIOS
 router.get('/',async (req, res) => {
   try {
-    const users = await User.find(); // Consulta todos os usuários
+    const users = await User.find().select('-password -confirmpassword -createdAt -updatedAt -__v -cpf');
     res.json(users);
   } catch(error) {
       res.status(500).json({ msg:'Erro ao consultar os Usuários'});
   }
 })
+
 
 //ROTA PARA ALTERAR SENHA DO USUÁRIO
 router.patch('/change-password/:id', async (req, res) => {
@@ -129,5 +130,8 @@ router.patch('/change-password/:id', async (req, res) => {
   }
 })
 
+
+
+router.get
 module.exports = router;
   
