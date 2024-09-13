@@ -65,6 +65,10 @@ router.get('/matricula/:matricula', async (req, res) => {
       res.json({
         matricula: professor.matricula,
         name: professor.name,
+        cpf: professor.cpf,
+        curso: professor.curso,
+        email: professor.email,
+        typeOfUser: professor.typeOfUser
       });
     } else {
       res.status(404).json({ msg: 'Professor não encontrado' });
