@@ -63,6 +63,7 @@ router.get('/matricula/:matricula', async (req, res) => {
 
     if (professor) {
       res.json({
+        _id: professor.id,
         matricula: professor.matricula,
         name: professor.name,
         cpf: professor.cpf,
@@ -111,28 +112,52 @@ router.get('/',async (req, res) => {
 
 
 //ROTA PARA ALTERAR SENHA DO USUÁRIO
+// ROTA PARA ALTERAR SENHA DO USUÁRIO COM VALIDAÇÃO DA SENHA ATUAL
 router.patch('/change-password/:id', async (req, res) => {
-  const { id } = req.params
-  const { newPassword } = req.body
+  const { id } = req.params;
+  const { currentPassword, newPassword, confirmPassword } = req.body;
 
   try {
-    const user = await User.findById(id)
+    // Encontra o usuário pelo ID
+    const user = await User.findById(id);
 
+    // Verifica se o usuário existe
     if (!user) {
       return res.status(404).json({ msg: 'Usuário não encontrado' });
     }
 
-    user.confirmpassword = newPassword
-    await user.save()
+    // Verifica se a senha atual está correta
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: 'Senha atual incorreta' });
+    }
 
-    res.status(200).json({ msg: 'Senha atualizada com sucesso! ', user})
+    // Verifica se a senha atual é a mesma que a nova senha
+    if (currentPassword === newPassword) {
+      return res.status(400).json({ msg: 'A nova senha não pode ser igual à senha atual.' });
+    }
 
-  } catch(error) {
-    console.error(error)
+    // Verifica se a nova senha e a confirmação de senha são iguais
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ msg: 'As senhas não coincidem.' });
+    }
 
-    res.status(500).json({ msg: 'Erro ao trocar a senha do usuário' })
+    // Faz o hash da nova senha antes de salvá-la
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Atualiza a senha do usuário
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ msg: 'Senha atualizada com sucesso!' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Erro ao trocar a senha do usuário' });
   }
-})
+});
+
 
 
 
