@@ -27,13 +27,18 @@ const editalSchema = new Schema({
     },
     requisitosEdital:{type:Array,
     },
+    requisitosEdital: {  // Referência a um único pacote de requisitos
+        type: Schema.Types.ObjectId,
+        ref: 'RequisitoPackage',
+        required: true
+    },
     profsAvaliadores:{type:Array
     },
     submissoes: [{
         type: Schema.Types.ObjectId,
         ref: 'Submissao'
     }],
-    linkEdital: {type: String, required: true}
+    linkEdital: {type: String}
 
 },
 {

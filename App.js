@@ -79,6 +79,10 @@ app.use('/getEdital', getEdital)
 const criacaoEdital = require('./controllers/CriacaoEdital.js')
 app.use('/criacao', criacaoEdital)
 
+//Rota requisitos edital
+const requisitosEdital = require('./controllers/RequisitosEdital.js')
+app.use('/requisitos', requisitosEdital)
+
 const submissao = require('./controllers/Submissao.js')
 app.use('/', submissao)
 
