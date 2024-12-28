@@ -3,7 +3,10 @@ const router = express.Router();
 const User = require('../models/user');
 const Edital = require('../models/edital');
 
-// ROTA LISTAGEM TODOS OS EDITAIS
+
+//PESQUISA EDITAIS
+
+// Rota listagem todos os editais
 router.get("/", async (req, res) => { // Rota corrigida para /getEdital
     try {
         const editais = await Edital.find(); // Consulta todos os editais
@@ -14,7 +17,7 @@ router.get("/", async (req, res) => { // Rota corrigida para /getEdital
 });
 
 //ROTA LISTAGEM EDITAL ESPECÍFICO POR ID
-router.get("/:id", async (req, res) => {
+router.get("id/:id", async (req, res) => {
     try {
         const edital = await Edital.findById(req.params.id);
         if (!edital) {
@@ -77,6 +80,8 @@ router.post('/add-prof-avaliador/:id', async (req, res) => {
     }
 })
 
+
+//Remove professor avaliador
 router.delete('/remove-prof-avaliador/:id', async (req,res) => {
     try {
         const { id } = req.params
