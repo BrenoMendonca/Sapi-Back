@@ -61,7 +61,7 @@ app.get("/", (req, res) => {
 
 
 //Rota Registro de usuário
-const criacaoRoutes = require('./controllers/Criacao.js'); 
+const criacaoRoutes = require('./controllers/CriacaoUser.js'); 
 app.use('/auth', criacaoRoutes);
 
 //Rota Login
@@ -74,11 +74,11 @@ app.use('/user', UserVerify)
 
 //Rota Criacao Edital
 const getEdital= require('./controllers/Edital.js');
-app.use('/getEdital', getEdital)
+app.use('/edital', getEdital)
 
 //Rota puxar editais
 const criacaoEdital = require('./controllers/CriacaoEdital.js')
-app.use('/criacao', criacaoEdital)
+app.use('/edital', criacaoEdital)
 
 //Rota requisitos edital
 const requisitosEdital = require('./controllers/RequisitosEdital.js')
