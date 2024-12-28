@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
 dotenv.config({path: './.env'});
+require('dotenv').config();
 console.log(process.env.USER)
 console.log(process.env.PASSWORD)
 

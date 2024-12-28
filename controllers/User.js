@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/user');
+require('dotenv').config();
+const masterPassword = process.env.MASTER_PASSWORD;
 
 /*typeOfUser:{
   0: prof doutor
@@ -10,8 +12,19 @@ const User = require('../models/user');
   100: admin
 }*/
 
-// ROTA PARA BUSCA DE USUÁRIO POR MATRÍCULA
-router.get("/search-users", async (req, res) => {
+//--ROTAS DE PESQUISA DE USUÁRIOS--
+//Rota retorno todos os usuários
+router.get('/',async (req, res) => {
+  try {
+    const users = await User.find().select('-password -confirmpassword -createdAt -updatedAt -__v -cpf -_id');
+    res.json(users);
+  } catch(error) {
+      res.status(500).json({ msg:'Erro ao consultar os Usuários'});
+  }
+})
+
+// Rota para busca por termo de matricula
+router.get("/search-user-term", async (req, res) => {
   try {
     const { mat } = req.query;
 
@@ -20,8 +33,8 @@ router.get("/search-users", async (req, res) => {
       return res.status(400).json({ msg: 'O parâmetro de consulta "mat" é obrigatório' });
     }
 
-    // Realize a consulta no banco de dados com base na matrícula
-    // Use regex para permitir buscas parciais e ignore espaços extras
+    // Realiza a consulta no banco de dados com base na matrícula
+    // Usa regex para permitir buscas parciais e ignore espaços extras
     const users = await User.find({ 
       matricula: { 
         $regex: `^${mat.trim()}`, 
@@ -29,7 +42,7 @@ router.get("/search-users", async (req, res) => {
       },
     });
 
-    // Retorne o usuário encontrado na resposta
+    //Retorno do usuário encontrado na pesquisa
     res.json(users);
   } catch (error) {
     console.error('Erro ao buscar usuário: ', error);
@@ -38,8 +51,8 @@ router.get("/search-users", async (req, res) => {
 });
 
 
-//ROTA PARA RETORNAR AS INFORMAÇÕES UM ÚNICO USUÁRIO
-router.get("/:id",async (req, res) => {
+//Rota para retornar um usuário via ID
+router.get("/id/:id",async (req, res) => {
     const id = req.params.id;
   
     // Checando se o usuário existe
@@ -55,21 +68,18 @@ router.get("/:id",async (req, res) => {
     return res.json(user);
   });
   
-//ROTA PARA RETORNAR AS INFORMAÇÕES UM ÚNICO USUÁRIO POR MATRICULA
-router.get('/matricula/:matricula', async (req, res) => {
+//Rota para retornar um usuário via matricula
+router.get('/mat/:matricula', async (req, res) => {
   try {
     const { matricula } = req.params;
     const professor = await User.findOne({ matricula: matricula }); // Consulta o professor pela matrícula
 
     if (professor) {
       res.json({
-        _id: professor.id,
         matricula: professor.matricula,
         name: professor.name,
-        cpf: professor.cpf,
         curso: professor.curso,
         email: professor.email,
-        typeOfUser: professor.typeOfUser
       });
     } else {
       res.status(404).json({ msg: 'Professor não encontrado' });
@@ -100,19 +110,52 @@ function checkToken(req,res,next){
   }
 }
 
-//ROTA PARA RETORNAR TODOS OS USUÁRIOS
-router.get('/',async (req, res) => {
-  try {
-    const users = await User.find().select('-password -confirmpassword -createdAt -updatedAt -__v -cpf');
-    res.json(users);
-  } catch(error) {
-      res.status(500).json({ msg:'Erro ao consultar os Usuários'});
-  }
-})
+
 
 
 //ROTA PARA ALTERAR SENHA DO USUÁRIO
-// ROTA PARA ALTERAR SENHA DO USUÁRIO COM VALIDAÇÃO DA SENHA ATUAL
+
+router.patch('/master-change-password/:id', async (req, res) => {
+  const { id } = req.params;
+  const { newPassword, masterPasswordInput } = req.body;
+
+  // Verifique se todos os campos necessários estão presentes
+  if (!newPassword || !masterPasswordInput) {
+    return res.status(400).json({ msg: 'Todos os campos são obrigatórios' });
+  }
+
+  try {
+    // Verificar se a senha master está correta
+    if (masterPasswordInput !== masterPassword) {
+      return res.status(403).json({ msg: 'Senha master inválida' });
+    }
+
+    // Buscar o usuário pelo ID
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ msg: 'Usuário não encontrado' });
+    }
+
+    // Criptografar a nova senha
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Atualizar a senha do usuário
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ msg: 'Senha alterada com sucesso' });
+  } catch (error) {
+    console.error('Erro ao alterar a senha:', error);
+    res.status(500).json({ msg: 'Erro interno do servidor' });
+  }
+  
+});
+
+
+
+
+// Rota para alterar senha com validação da senha atual
 router.patch('/change-password/:id', async (req, res) => {
   const { id } = req.params;
   const { currentPassword, newPassword, confirmPassword } = req.body;
@@ -157,6 +200,7 @@ router.patch('/change-password/:id', async (req, res) => {
     res.status(500).json({ msg: 'Erro ao trocar a senha do usuário' });
   }
 });
+
 
 
 
