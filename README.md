@@ -29,6 +29,7 @@ SAPI é um sistema web construido para ser um repositório de Editais e projetos
 ## 🛫 Como rodar o projeto
 - Execute o comando `npm start` para executar o projeto
 - Se o IP estiver conectado corretamente ao banco, ao inciar a mensagem será retornada ``Conectado ao banco``
+- Se você for administrador solicite as senhas para o coordenador do projeto 
 
 ## Instalação
 - Execute o comando `npm install` para baixar as dependencias do projeto
