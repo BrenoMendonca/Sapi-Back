@@ -4,7 +4,8 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/user');
 require('dotenv').config();
-const masterPassword = process.env.MASTER_PASSWORD;
+const authenticateToken = require('../middleware/auth');
+const masterPassword = process.env.SECRET;
 
 /*typeOfUser:{
   0: prof doutor
@@ -13,18 +14,43 @@ const masterPassword = process.env.MASTER_PASSWORD;
 }*/
 
 //--ROTAS DE PESQUISA DE USUÁRIOS--
+// --Rotas Publicas--
+
 //Rota retorno todos os usuários
 router.get('/',async (req, res) => {
   try {
-    const users = await User.find().select('-password -confirmpassword -createdAt -updatedAt -__v -cpf -_id');
+    const users = await User.find().select('-password -confirmpassword -createdAt -updatedAt -__v -cpf ');
     res.json(users);
   } catch(error) {
       res.status(500).json({ msg:'Erro ao consultar os Usuários'});
   }
 })
 
+//Rota para retornar um usuário via matricula
+router.get('/mat/:matricula', async (req, res) => {
+  try {
+    const { matricula } = req.params;
+    const professor = await User.findOne({ matricula: matricula }); // Consulta o professor pela matrícula
+
+    if (professor) {
+      res.json({
+        matricula: professor.matricula,
+        name: professor.name,
+        curso: professor.curso,
+        email: professor.email,
+      });
+    } else {
+      res.status(404).json({ msg: 'Professor não encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ msg: 'Erro ao consultar o Professor' });
+  }
+});
+
+// --Rotas Privadas--
+
 // Rota para busca por termo de matricula
-router.get("/search-user-term", async (req, res) => {
+router.get("/search-user-term", authenticateToken, async (req, res) => {
   try {
     const { mat } = req.query;
 
@@ -52,9 +78,9 @@ router.get("/search-user-term", async (req, res) => {
 
 
 //Rota para retornar um usuário via ID
-router.get("/id/:id",async (req, res) => {
+router.get("/id/:id", authenticateToken ,async (req, res) => {
     const id = req.params.id;
-  
+
     // Checando se o usuário existe
     const user = await User.findById(id, '-password')
       .catch((error) => {
@@ -67,55 +93,12 @@ router.get("/id/:id",async (req, res) => {
     }
     return res.json(user);
   });
-  
-//Rota para retornar um usuário via matricula
-router.get('/mat/:matricula', async (req, res) => {
-  try {
-    const { matricula } = req.params;
-    const professor = await User.findOne({ matricula: matricula }); // Consulta o professor pela matrícula
-
-    if (professor) {
-      res.json({
-        matricula: professor.matricula,
-        name: professor.name,
-        curso: professor.curso,
-        email: professor.email,
-      });
-    } else {
-      res.status(404).json({ msg: 'Professor não encontrado' });
-    }
-  } catch (error) {
-    res.status(500).json({ msg: 'Erro ao consultar o Professor' });
-  }
-});
-
-  //Adicionando autorização nas rotas
-function checkToken(req,res,next){
-  const AuthHeader = req.headers['authorization']
-  const token = AuthHeader && AuthHeader.split(" ")[1]
-
-  if(!token){
-    return res.status(401).json({msg:'Acesso Negado!'})
-  }
-
-  try{
-    const secret = process.env.SECRET
-      
-    jwt.verify(token, secret)
-      
-    next()
-      
-  }catch(erro){
-    res.status(400).json({msg:"Token inválido!"})
-  }
-}
-
 
 
 
 //ROTA PARA ALTERAR SENHA DO USUÁRIO
 
-router.patch('/master-change-password/:id', async (req, res) => {
+router.patch('/master-change-password/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { newPassword, masterPasswordInput } = req.body;
 
@@ -152,11 +135,8 @@ router.patch('/master-change-password/:id', async (req, res) => {
   
 });
 
-
-
-
 // Rota para alterar senha com validação da senha atual
-router.patch('/change-password/:id', async (req, res) => {
+router.patch('/change-password/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { currentPassword, newPassword, confirmPassword } = req.body;
 
