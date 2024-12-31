@@ -35,8 +35,10 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
+        matricula: user.matricula,
       },
-      secret
+      secret,
+      { expiresIn: '24h' }
     );
 
     const { name, _id } = user;
