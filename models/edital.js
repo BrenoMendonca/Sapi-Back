@@ -25,15 +25,15 @@ const editalSchema = new Schema({
     status:{type:Number,
         required:true
     },
-    requisitosEdital:{type:Array,
-    },
-    requisitosEdital: {  // Referência a um único pacote de requisitos
-        type: Schema.Types.ObjectId,
+    requisitosEdital: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'RequisitoPackage',
         required: true
-    },
-    profsAvaliadores:{type:Array
-    },
+    }],
+    profsAvaliadores: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // Referencia o modelo 'User'
+      }],
     submissoes: [{
         type: Schema.Types.ObjectId,
         ref: 'Submissao'
