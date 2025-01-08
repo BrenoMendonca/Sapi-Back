@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const Edital = require('../models/edital');
-
+const mongoose = require('mongoose');
+require('dotenv').config();
+const authenticateToken = require('../middleware/auth');
+const masterPassword = process.env.SECRET;          
 
 //PESQUISA EDITAIS
 
@@ -17,7 +20,7 @@ router.get("/", async (req, res) => { // Rota corrigida para /getEdital
 });
 
 //ROTA LISTAGEM EDITAL ESPECÍFICO POR ID
-router.get("id/:id", async (req, res) => {
+router.get("/id/:id",authenticateToken, async (req, res) => {
     try {
         const edital = await Edital.findById(req.params.id);
         if (!edital) {
@@ -31,54 +34,50 @@ router.get("id/:id", async (req, res) => {
 
 // ADICIONAR PROFESSOR COMO AVALIADOR
 router.post('/add-prof-avaliador/:id', async (req, res) => {
-    try {
-        const { id } = req.params; // ID do edital
-        const { matriculas } = req.body; // Array de matrículas dos usuários selecionados
+  try {
+    const editalId = req.params.id;
+    const { avaliadores } = req.body;
 
-        // Verifique se o edital existe
-        const edital = await Edital.findById(id);
-        if (!edital) {
-            return res.status(404).json({ msg: 'Edital não encontrado.' });
-        }
-
-        // Verifique se há matrículas duplicadas no array
-        const matriculasUnicas = [...new Set(matriculas)];
-        if (matriculasUnicas.length !== matriculas.length) {
-            return res.status(400).json({ msg: 'Contém matrículas duplicadas. Tente novamente.' });
-        }
-
-        // Verifique se todas as matrículas são válidas e não estão presentes como professores avaliadores
-        const erros = [];
-        const professoresAvaliadores = [];
-        for (let matricula of matriculasUnicas) {
-            const user = await User.findOne({ matricula });
-            if (!user) {
-                erros.push(`Usuário com a matrícula ${matricula} não encontrado ou não é um professor.`);
-            } else if (edital.profsAvaliadores.some(avaliador => avaliador.matricula === user.matricula)) {
-                erros.push(`Usuário com a matrícula ${matricula} já é um professor avaliador deste edital.`);
-            } else {
-                professoresAvaliadores.push({
-                    id: user._id,
-                    matricula: user.matricula,
-                    nome: user.name,
-                });
-            }
-        }
-
-        if (erros.length > 0) {
-            return res.status(400).json({ msg: 'Alguns professores não puderam ser adicionados como avaliadores.', erros });
-        }
-
-        // Adicione os professores avaliadores ao edital
-        edital.profsAvaliadores.push(...professoresAvaliadores);
-        await edital.save();
-
-        res.status(201).json({ msg: 'Todos os professores avaliadores foram adicionados ao edital com sucesso.' });
-    } catch(error) {
-        console.error('Erro ao adicionar professores avaliadores:', error);
-        res.status(500).json({ msg: 'Erro interno do servidor.' });
+    if (!avaliadores || !Array.isArray(avaliadores) || avaliadores.length === 0) {
+      return res.status(400).json({ message: 'Por favor, forneça uma lista válida de avaliadores.' });
     }
-})
+
+    const avaliadoresObjectId = avaliadores.map(id => {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new Error(`ID inválido encontrado: ${id}`);
+      }
+      return new mongoose.Types.ObjectId(id);
+    });
+
+    const edital = await Edital.findById(editalId);
+    if (!edital) {
+      return res.status(404).json({ message: 'Edital não encontrado.' });
+    }
+
+    if (!Array.isArray(edital.profsAvaliadores)) {
+      edital.profsAvaliadores = [];
+    }
+
+    if (edital.profsAvaliadores.length + avaliadoresObjectId.length > 3) {
+      return res.status(400).json({ message: 'Você só pode adicionar até 3 avaliadores ao edital.' });
+    }
+
+    const novosAvaliadores = avaliadoresObjectId.filter(
+      id => !edital.profsAvaliadores.some(existingId => existingId.equals(id))
+    );
+
+    edital.profsAvaliadores.push(...novosAvaliadores);
+    await edital.save();
+
+    return res.status(200).json({ message: 'Avaliadores adicionados com sucesso ao edital.' });
+  } catch (error) {
+    console.error('Erro ao adicionar avaliadores ao edital:', error.message);
+    return res.status(500).json({ message: 'Erro ao processar a requisição.', error: error.message });
+  }
+});
+  
+
+
 
 
 //Remove professor avaliador
