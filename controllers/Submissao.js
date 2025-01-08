@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 
 //CRIAR SUBMISSÃO
-router.post('/submissao', async (req, res) => {
+router.post('/create-project', async (req, res) => {
     try {
         const { matricula, edital, title, description } = req.body;
 
@@ -46,6 +46,7 @@ router.post('/submissao', async (req, res) => {
     } catch (e) {
         return res.status(500).json({ msg: 'Erro interno do servidor.' , error: e })    }
 })
+
 
 //LISTAR SUBMISSÕES DE UM EDITAL
 router.get('/getEdital/:id/submissoes/', async (req, res) => {
