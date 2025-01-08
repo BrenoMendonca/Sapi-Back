@@ -19,7 +19,7 @@ router.get("/", async (req, res) => { // Rota corrigida para /getEdital
     }
 });
 
-//ROTA LISTAGEM EDITAL ESPECÍFICO POR ID
+//Listagem edital especifico por ID
 router.get("/id/:id",authenticateToken, async (req, res) => {
     try {
         const edital = await Edital.findById(req.params.id);
@@ -32,8 +32,11 @@ router.get("/id/:id",authenticateToken, async (req, res) => {
     }
 })
 
-// ADICIONAR PROFESSOR COMO AVALIADOR
-router.post('/add-prof-avaliador/:id', async (req, res) => {
+
+// ROTA DE EDICOES DE AVALIADORES
+
+// Adicionar professor como avaliador
+router.post('/add-prof-avaliador/:id', authenticateToken, async (req, res) => {
   try {
     const editalId = req.params.id;
     const { avaliadores } = req.body;
@@ -42,12 +45,22 @@ router.post('/add-prof-avaliador/:id', async (req, res) => {
       return res.status(400).json({ message: 'Por favor, forneça uma lista válida de avaliadores.' });
     }
 
-    const avaliadoresObjectId = avaliadores.map(id => {
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new Error(`ID inválido encontrado: ${id}`);
-      }
-      return new mongoose.Types.ObjectId(id);
+    // Verificar se todos os IDs são válidos
+    const idsValidos = avaliadores.every((id) => mongoose.Types.ObjectId.isValid(id));
+    if (!idsValidos) {
+      return res.status(400).json({ msg: "Um ou mais IDs de avaliadores são inválidos" });
+    }
+
+    // Verificar se os avaliadores existem no banco
+    const avaliadoresExistentes = await User.find({
+      '_id': { $in: avaliadores }
     });
+
+    if (avaliadoresExistentes.length !== avaliadores.length) {
+      return res.status(404).json({ msg: "Um ou mais avaliadores não encontrados no banco de dados." });
+    }
+
+    const avaliadoresObjectId = avaliadores.map(id => new mongoose.Types.ObjectId(id));
 
     const edital = await Edital.findById(editalId);
     if (!edital) {
@@ -58,6 +71,7 @@ router.post('/add-prof-avaliador/:id', async (req, res) => {
       edital.profsAvaliadores = [];
     }
 
+    // Limite de 3 avaliadores
     if (edital.profsAvaliadores.length + avaliadoresObjectId.length > 3) {
       return res.status(400).json({ message: 'Você só pode adicionar até 3 avaliadores ao edital.' });
     }
@@ -75,36 +89,134 @@ router.post('/add-prof-avaliador/:id', async (req, res) => {
     return res.status(500).json({ message: 'Erro ao processar a requisição.', error: error.message });
   }
 });
-  
 
+  
+//Substitui professor avaliador
+router.patch('/edit-prof-avaliador/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params; // ID do edital
+    const { avaliadores } = req.body; // Array com os novos IDs de avaliadores
+
+    // Valida o ID do edital
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ msg: 'ID do edital inválido.' });
+    }
+
+    // Valida o array de avaliadores
+    if (!Array.isArray(avaliadores) || avaliadores.length === 0) {
+      return res
+        .status(400)
+        .json({ msg: 'Envie uma lista válida de IDs de avaliadores.' });
+    }
+
+    // Verifica se todos os IDs dos avaliadores são válidos
+    const idsValidos = avaliadores.every((id) =>
+      mongoose.Types.ObjectId.isValid(id)
+    );
+    if (!idsValidos) {
+      return res
+        .status(400)
+        .json({ msg: 'Um ou mais IDs de avaliadores são inválidos.' });
+    }
+
+    // Busca o edital no banco
+    const edital = await Edital.findById(id);
+    if (!edital) {
+      return res.status(404).json({ msg: 'Edital não encontrado.' });
+    }
+
+    // Verifica se os avaliadores existem no banco
+    const avaliadoresExistentes = await User.find({
+      _id: { $in: avaliadores },
+    });
+    if (avaliadoresExistentes.length !== avaliadores.length) {
+      return res
+        .status(404)
+        .json({ msg: 'Um ou mais avaliadores não foram encontrados no banco de dados.' });
+    }
+
+    // Substitui os avaliadores no edital
+    edital.profsAvaliadores = avaliadores;
+
+    // Salva as alterações no banco
+    await edital.save();
+
+    return res.status(200).json({
+      msg: 'Avaliadores substituídos com sucesso.',
+      edital,
+    });
+  } catch (error) {
+    console.error('Erro ao substituir avaliadores:', error);
+    return res.status(500).json({ msg: 'Erro interno do servidor.' });
+  }
+});
 
 
 
 //Remove professor avaliador
-router.delete('/remove-prof-avaliador/:id', async (req,res) => {
-    try {
-        const { id } = req.params
-        const { matricula } = req.body
+router.delete('/remove-prof-avaliador/:id',authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params; // ID do edital
+    const { avaliadores } = req.body; // Lista de IDs dos professores a serem removidos
 
-        const edital = await Edital.findById(id)
-        if (!edital) {
-            return res.status(404).json({ msg: 'Edital não encontrado.' });
-        }
-        
-        const index = edital.profsAvaliadores.findIndex(avaliador => avaliador.matricula === matricula);
-
-        if (index === -1) {
-            return res.status(404).json({ msg: 'Professor avaliador não encontrado neste edital' });
-        }
-
-        edital.profsAvaliadores.splice(index, 1);
-        await edital.save();
-
-        return res.status(200).json({ msg: `Professor de matrícula ${matricula} retirado como avaliador` })
-    } catch (error) {
-        console.error('Erro ao remover professor avaliador:', error);
-        res.status(500).json({ msg: 'Erro interno do servidor' });
+    // Verifica se o ID do edital é válido
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ msg: 'ID do edital inválido.' });
     }
-})
+
+    // Verifica se o edital existe
+    const edital = await Edital.findById(id);
+    if (!edital) {
+      return res.status(404).json({ msg: 'Edital não encontrado.' });
+    }
+
+    // Valida o array de IDs
+    if (!Array.isArray(avaliadores) || avaliadores.length === 0) {
+      return res.status(400).json({ msg: 'Envie uma lista válida de IDs de professores.' });
+    }
+
+    // Verifica se todos os IDs de professores são válidos
+    const idsInvalidos = avaliadores.filter(
+      (professorId) => !mongoose.Types.ObjectId.isValid(professorId)
+    );
+
+    if (idsInvalidos.length > 0) {
+      return res.status(400).json({
+        msg: 'Um ou mais IDs de professores são inválidos.',
+        idsInvalidos,
+      });
+    }
+
+    // Remove os IDs válidos que estão presentes no edital
+    const avaliadoresRemovidos = [];
+    avaliadores.forEach((professorId) => {
+      const index = edital.profsAvaliadores.findIndex(
+        (avaliadorId) => avaliadorId.toString() === professorId
+      );
+
+      if (index !== -1) {
+        edital.profsAvaliadores.splice(index, 1); // Remove o avaliador
+        avaliadoresRemovidos.push(professorId); // Adiciona à lista de removidos
+      }
+    });
+
+    // Salva as alterações no edital
+    await edital.save();
+
+    if (avaliadoresRemovidos.length === 0) {
+      return res.status(404).json({ msg: 'Nenhum dos professores avaliadores foi encontrado.' });
+    }
+
+    return res.status(200).json({
+      msg: 'Professores avaliadores removidos com sucesso.',
+      removidos: avaliadoresRemovidos,
+    });
+  } catch (error) {
+    console.error('Erro ao remover professores avaliadores:', error);
+    return res.status(500).json({ msg: 'Erro interno do servidor.' });
+  }
+});
+
+
 
 module.exports = router;
