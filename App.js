@@ -85,7 +85,7 @@ const requisitosEdital = require('./controllers/RequisitosEdital.js')
 app.use('/requisitos', requisitosEdital)
 
 const submissao = require('./controllers/Submissao.js')
-app.use('/', submissao)
+app.use('/submissao', submissao)
 
 //Credenciais
 const DbUser = process.env.DB_USER;
