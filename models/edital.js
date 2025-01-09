@@ -3,6 +3,12 @@ const {Schema} = mongoose;
 
 const editalSchema = new Schema({
 
+
+    creatorEdital: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required:true
+    },
     nameEdital:{type: String,
         required:true
     }, 
