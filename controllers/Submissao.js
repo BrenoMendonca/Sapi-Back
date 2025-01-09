@@ -4,51 +4,77 @@ const Edital  = require('../models/edital');
 const User = require('../models/user');
 const mongoose = require('mongoose');
 const router = express.Router();
+const authenticateToken = require('../middleware/auth');
+require('dotenv').config();
+const jwt = require('jsonwebtoken'); 
 
 //CRIAR SUBMISSÃO
-router.post('/create-project', async (req, res) => {
+
+router.post('/create-project/:editalId', authenticateToken, async (req, res) => {
     try {
-        const { matricula, edital, title, description } = req.body;
+      const { profId, title, description } = req.body;
+      const { editalId } = req.params;
+  
+      // Validação dos IDs
+      const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+      if (!isValidObjectId(editalId)) {
+        return res.status(400).json({ msg: 'ID do edital inválido.' });
+      }
+      if (!isValidObjectId(profId)) {
+        return res.status(400).json({ msg: 'ID do professor inválido.' });
+      }
+  
+      // Verifica se os dados necessários foram enviados
+      if (!profId || !title || !description) {
+        return res.status(400).json({ msg: 'Dados de entrada incompletos.' });
+      }
+  
+      // Busca o edital
+      const edital = await Edital.findById(editalId).lean();
+      if (!edital) {
+        return res.status(404).json({ msg: 'Edital não encontrado.' });
+      }
+  
+      // Busca o professor
+      const prof = await User.findById(profId).lean();
+      if (!prof) {
+        return res.status(404).json({ msg: 'Professor não encontrado.' });
+      }
+  
+      // Verifica se o professor já fez uma submissão para esse edital
+      const existingSubmission = await Submissao.findOne({ prof: prof._id, edital: edital._id }).lean();
+      if (existingSubmission) {
+        return res.status(409).json({ msg: 'Este professor já submeteu um projeto para este edital.' });
+      }
+  
+      // Cria a nova submissão
+      const submission = new Submissao({
+        prof: prof._id,
+        edital: edital._id,
+        title,
+        description,
+      });
+  
+      await submission.save();
+  
+      return res.status(201).json({
+        msg: 'Submissão criada com sucesso.',
+        data: {
+          submissionId: submission._id,
+          professorId: prof._id,
+          editalId: edital._id,
+          title: submission.title,
+          description: submission.description,
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao criar projeto:', error.message);
+      return res.status(500).json({ msg: 'Erro interno do servidor.' });
+    }
+  });
+  
 
-        if (!matricula || !edital || !title || !description) {
-            return res.status(422).json({ msg: 'Dados de entrada incompletos.' });
-        }
-
-        const prof = await User.findOne({ matricula });
-
-        if (!prof) {
-            return res.status(422).json({ msg: 'Professor não encontrado ou inexistente.' });
-        }
-
-        if (!mongoose.Types.ObjectId.isValid(edital)) {
-            return res.status(422).json({ msg: 'ID do edital inválido.' });
-        }
-
-        const editalDoc = await Edital.findById(edital);
-
-        if (!editalDoc) {
-            return res.status(422).json({ msg: 'Edital não encontrado ou inexistente.' });
-        }
-
-        const submission = new Submissao({
-            prof: prof._id,
-            edital: editalDoc._id,
-            title,
-            description
-        });
-
-        await submission.save()
-        
-        editalDoc.submissoes.push(submission._id);
-        await editalDoc.save();
-
-        return res.status(201).json({ msg: 'Submissão criada com sucesso.' })
-    } catch (e) {
-        return res.status(500).json({ msg: 'Erro interno do servidor.' , error: e })    }
-})
-
-
-//LISTAR SUBMISSÕES DE UM EDITAL
+//Listar submissoes de um edital
 router.get('/getEdital/:id/submissoes/', async (req, res) => {
     try {
         const editalId = req.params.id

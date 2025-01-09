@@ -20,7 +20,7 @@ const submissaoSchema = new Schema({
     type: String,
     required: true
   },
-  areReqsValidated: {
+  areReqsValidated: { //Aprova projeto
     type: Boolean,
     required: true,
     default: false,
