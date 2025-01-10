@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const Edital = require('../models/edital');
+const Submissao = require('../models/submissao');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const authenticateToken = require('../middleware/auth');
@@ -334,6 +335,51 @@ router.delete('/remove-prof-avaliador/:id',authenticateToken, async (req, res) =
   } catch (error) {
     console.error('Erro ao remover professores avaliadores:', error);
     return res.status(500).json({ msg: 'Erro interno do servidor.' });
+  }
+});
+
+router.patch("/aprovar-edital/:editalId", authenticateToken, async (req, res) => {
+  try {
+      // Busca o edital pelo ID
+      const edital = await Edital.findById(req.params.editalId);
+      if (!edital) {
+          return res.status(404).json({ msg: "Edital não encontrado" });
+      }
+
+      // 1. Verificação se todos os itens de requisitos estão aprovados
+      let todosRequisitosAprovados = true;
+      for (const requisito of edital.requisitosEdital) {
+          for (const item of requisito.itens) {
+              if (item.status !== 'Aprovado') {
+                  todosRequisitosAprovados = false;
+                  break;
+              }
+          }
+          if (!todosRequisitosAprovados) break;
+      }
+
+      if (!todosRequisitosAprovados) {
+          return res.status(400).json({ msg: "Todos os itens do edital precisam estar aprovados." });
+      }
+
+      // 2. Verificação se existe pelo menos uma submissão aprovada
+      const submissaoAprovada = await Submissao.findOne({
+          edital: edital._id,
+          status: 'aprovada'
+      });
+
+      if (!submissaoAprovada) {
+          return res.status(400).json({ msg: "Nenhuma submissão aprovada encontrada." });
+      }
+
+      // Se ambos os requisitos forem atendidos, atualiza o status do edital para 'Aprovado'
+      edital.status = 'Aprovado'; // Atualizando o status para 'Aprovado'
+      await edital.save();
+
+      return res.status(200).json({ msg: "Edital aprovado com sucesso", edital });
+  } catch (error) {
+      console.error("Erro ao aprovar edital:", error.message);
+      return res.status(500).json({ msg: "Erro interno do servidor", error: error.message });
   }
 });
 
