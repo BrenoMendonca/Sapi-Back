@@ -33,7 +33,37 @@ router.get("/id/:id",authenticateToken, async (req, res) => {
 })
 
 
-// ROTA DE EDICOES DE AVALIADORES
+// ROTAS DE EDICOES NO EDITAL
+
+// Atualiza o nome do edital
+router.patch("/edital-edit-name/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { nameEdital } = req.body;
+
+  try {
+      // Verificar se o novo nome foi fornecido
+      if (!nameEdital) {
+          return res.status(400).json({ msg: "O novo nome do edital é obrigatório." });
+      }
+
+
+      // Atualizar o campo no banco de dados
+      const editalAtualizado = await Edital.findByIdAndUpdate(
+          id,
+          { nameEdital },
+          { new: true, runValidators: true } // Retornar o documento atualizado e aplicar validações
+      );
+
+      if (!editalAtualizado) {
+          return res.status(404).json({ msg: "Edital não encontrado." });
+      }
+
+      return res.status(200).json({ msg: "Nome do edital atualizado com sucesso.", edital: editalAtualizado });
+  } catch (error) {
+      console.error("Erro ao atualizar o nome do edital:", error.message);
+      return res.status(500).json({ msg: "Erro interno do servidor.", error: error.message });
+  }
+});
 
 // Adicionar professor como avaliador
 router.post('/add-prof-avaliador/:id', authenticateToken, async (req, res) => {
@@ -150,7 +180,6 @@ router.patch('/edit-prof-avaliador/:id', authenticateToken, async (req, res) => 
     return res.status(500).json({ msg: 'Erro interno do servidor.' });
   }
 });
-
 
 
 //Remove professor avaliador
