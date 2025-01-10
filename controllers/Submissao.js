@@ -75,23 +75,40 @@ router.post('/create-project/:editalId', authenticateToken, async (req, res) => 
   
 
 //Listar submissoes de um edital
-router.get('/getEdital/:id/submissoes/', async (req, res) => {
+router.get('/getEdital/:id/submissoes', async (req, res) => {
     try {
-        const editalId = req.params.id
-
-        const edital = await Edital.findById(editalId).populate('submissoes')
-
-        if (!edital) {
-            return res.status(404).json({ msg: 'Edital não encontrado.' })
-        }
-
-        return res.status(200).json(edital.submissoes)
-    } catch (e) {
-        console.error(e)
+      const { id } = req.params;
+  
+      // Validação do ID do edital
+      const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
+      if (!isValidObjectId) {
+        return res.status(400).json({ msg: 'ID do edital inválido.' });
+      }
+  
+      // Verificar se o edital existe
+      const edital = await Edital.findById(id).lean();
+      if (!edital) {
+        return res.status(404).json({ msg: 'Edital não encontrado.' });
+      }
+  
+      // Buscar todas as submissões associadas ao edital
+      const submissoes = await Submissao.find({ edital: id })
+        .populate('prof', 'name email') // Popula informações do professor (caso necessário)
+        .lean();
+  
+      // Retornar as submissões
+      return res.status(200).json({
+        msg: 'Submissões encontradas com sucesso.',
+        data: submissoes,
+      });
+    } catch (error) {
+      console.error('Erro ao buscar submissões:', error.message);
+      return res.status(500).json({ msg: 'Erro interno do servidor.' });
     }
-})
+  });
+  
 
-//LISTAR SUBMISSÃO DE UM EDITAL ESPECÍFICO
+//Listar submissão de um edital especifico
 router.get('/submissoes/:idSubmissao', async (req, res) => {
     try {
         const { idSubmissao } = req.params
