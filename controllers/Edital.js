@@ -65,6 +65,97 @@ router.patch("/edital-edit-name/:id", authenticateToken, async (req, res) => {
   }
 });
 
+//Atualiza o numero do edital
+router.patch("/edital-edit-num/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { numeroEdital } = req.body;
+
+  try {
+      // Verificar se o novo nome foi fornecido
+      if (!numeroEdital) {
+          return res.status(400).json({ msg: "O novo número do edital é obrigatório." });
+      }
+
+
+      // Atualizar o campo no banco de dados
+      const editalAtualizado = await Edital.findByIdAndUpdate(
+          id,
+          { numeroEdital },
+          { new: true, runValidators: true } // Retornar o documento atualizado e aplicar validações
+      );
+
+      if (!editalAtualizado) {
+          return res.status(404).json({ msg: "Edital não encontrado." });
+      }
+
+      return res.status(200).json({ msg: "Numero do edital atualizado com sucesso.", edital: editalAtualizado });
+  } catch (error) {
+      console.error("Erro ao atualizar o numero do edital:", error.message);
+      return res.status(500).json({ msg: "Erro interno do servidor.", error: error.message });
+  }
+});
+
+
+//Atualiza o objetivo
+router.patch("/edital-edit-objetivo/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { objetivo } = req.body;
+
+  try {
+      // Verificar se o novo nome foi fornecido
+      if (!objetivo) {
+          return res.status(400).json({ msg: "O objetivo não deve estar em branco." });
+      }
+
+
+      // Atualizar o campo no banco de dados
+      const editalAtualizado = await Edital.findByIdAndUpdate(
+          id,
+          { objetivo },
+          { new: true, runValidators: true } // Retornar o documento atualizado e aplicar validações
+      );
+
+      if (!editalAtualizado) {
+          return res.status(404).json({ msg: "Edital não encontrado." });
+      }
+
+      return res.status(200).json({ msg: "Objetivo do edital atualizado com sucesso.", edital: editalAtualizado });
+  } catch (error) {
+      console.error("Erro ao atualizar o objetivo do edital:", error.message);
+      return res.status(500).json({ msg: "Erro interno do servidor.", error: error.message });
+  }
+});
+
+//Atualiza o Publico alvo
+router.patch("/edital-edit-publico-alvo/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { publicoAlvo } = req.body;
+
+  try {
+      // Verificar se o novo nome foi fornecido
+      if (!publicoAlvo) {
+          return res.status(400).json({ msg: "O Público alvo não deve estar em branco." });
+      }
+
+
+      // Atualizar o campo no banco de dados
+      const editalAtualizado = await Edital.findByIdAndUpdate(
+          id,
+          { publicoAlvo },
+          { new: true, runValidators: true } // Retornar o documento atualizado e aplicar validações
+      );
+
+      if (!editalAtualizado) {
+          return res.status(404).json({ msg: "Edital não encontrado." });
+      }
+
+      return res.status(200).json({ msg: "Público alvo do edital atualizado com sucesso.", edital: editalAtualizado });
+  } catch (error) {
+      console.error("Erro ao atualizar o público alvo do edital:", error.message);
+      return res.status(500).json({ msg: "Erro interno do servidor.", error: error.message });
+  }
+});
+
 // Adicionar professor como avaliador
 router.post('/add-prof-avaliador/:id', authenticateToken, async (req, res) => {
   try {
