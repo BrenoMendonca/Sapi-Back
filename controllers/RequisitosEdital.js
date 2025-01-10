@@ -30,6 +30,8 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+
+
 //Aprova/Reprova requisitos de um pacote de requisitos
 router.patch("/aprovar-requisitos/:editalId", authenticateToken, async (req, res) => {
     const { requisitos } = req.body; // O array de requisitos que está sendo aprovado ou reprovado
