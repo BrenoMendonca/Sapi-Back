@@ -2,55 +2,74 @@ const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const editalSchema = new Schema({
-
-
     creatorEdital: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required:true
+        required: true
     },
-    nameEdital:{type: String,
-        required:true
-    }, 
-    numeroEdital:{type: String,
-        required:true
+    nameEdital: {
+        type: String,
+        required: true
     },
-    dataInicio:{type: String,
-        required:true
+    numeroEdital: {
+        type: String,
+        required: true
     },
-    dataFinal:{type: String,
-        required:true
+    dataInicio: {
+        type: String,
+        required: true
     },
-    objetivo:{type:String,
-        required:true
+    dataFinal: {
+        type: String,
+        required: true
     },
-    publicoAlvo:{type:String,
-    },  
-    criador:{type:String,
+    objetivo: {
+        type: String,
+        required: true
     },
-    status:{type:Number,
-        required:true
+    publicoAlvo: {
+        type: String
+    },
+    status: {
+        type: Number,
+        required: true
     },
     requisitosEdital: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'RequisitoPackage',
-        required: true
+        pacoteId: { 
+            type: Schema.Types.ObjectId, 
+            ref: 'RequisitoPackage', // Referência ao pacote original
+            required: true 
+        },
+        nameRequisito: { 
+            type: String, 
+            required: true 
+        }, // Nome do pacote de requisitos
+        itens: [{
+            descricao: { 
+                type: String, 
+                required: true 
+            }, // Descrição do item
+            status: { 
+                type: String, 
+                enum: ['Aprovado', 'Reprovado', 'Pendente'], 
+                default: 'Pendente' 
+            } // Status do item
+        }]
     }],
     profsAvaliadores: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Referencia o modelo 'User'
-      }],
+        ref: 'User' // Referência ao modelo 'User'
+    }],
     submissoes: [{
         type: Schema.Types.ObjectId,
         ref: 'Submissao'
     }],
-    linkEdital: {type: String}
-
-},
-{
-    timestamps:true
-}
-);
+    linkEdital: {
+        type: String
+    }
+}, {
+    timestamps: true
+});
 
 const Edital = mongoose.model('Edital', editalSchema);
-module.exports = Edital
+module.exports = Edital;
