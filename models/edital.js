@@ -31,7 +31,8 @@ const editalSchema = new Schema({
         type: String
     },
     status: {
-        type: Number,
+        type: String,
+        enum: ['Aberto', 'Submissão', 'Em analise', 'Aprovado'], 
         required: true
     },
     requisitosEdital: [{
