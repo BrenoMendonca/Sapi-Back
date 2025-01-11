@@ -6,7 +6,6 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const authenticateToken = require('../middleware/auth');
 require('dotenv').config();
-const jwt = require('jsonwebtoken'); 
 
 //CRIAR SUBMISSÃO
 

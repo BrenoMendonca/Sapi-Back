@@ -2,7 +2,7 @@ const express = require('express');
 const RequisitoPackage = require('../models/requisitosEdital');
 const router = express.Router();
 
-// ROTA CRIAÇÃO REQUISITOS EDITAL
+// Rota Criação de requisitos do edital
 router.post("/criacao", async (req, res) => {
     const { nameRequisito, requisitos } = req.body;
 

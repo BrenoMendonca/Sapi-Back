@@ -115,7 +115,7 @@ const authenticateToken = require('../middleware/auth');
             dataFinal: formattedDataFinal, 
             objetivo, 
             publicoAlvo, 
-            status: 1, 
+            status: 'Aberto', 
             requisitosEdital: {
                 pacoteId: requisitoPackage._id, // ID do pacote original
                 nameRequisito: requisitoPackage.nameRequisito, // Nome do pacote de requisitos

@@ -6,7 +6,6 @@ const Submissao = require('../models/submissao');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const authenticateToken = require('../middleware/auth');
-const masterPassword = process.env.SECRET;          
 
 //PESQUISA EDITAIS
 
@@ -382,7 +381,7 @@ router.patch("/aprovar-edital/:editalId", authenticateToken, async (req, res) =>
       return res.status(500).json({ msg: "Erro interno do servidor", error: error.message });
   }
 });
-
+ 
 
 
 module.exports = router;

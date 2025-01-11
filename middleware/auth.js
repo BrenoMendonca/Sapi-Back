@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config(); // Carrega variáveis do arquivo .env
-const secret = process.env.SECRET; // Usa a variável de ambiente SECRET
+require('dotenv').config(); 
+const secret = process.env.SECRET; 
 
 // Middleware para validar o token JWT
 const authenticateToken = (req, res, next) => {

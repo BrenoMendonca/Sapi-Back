@@ -1,6 +1,5 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/user');
 require('dotenv').config();
@@ -96,7 +95,7 @@ router.get("/id/:id", authenticateToken ,async (req, res) => {
 
 
 
-//ROTA PARA ALTERAR SENHA DO USUÁRIO
+//Rota para alterar a senha do usuário
 
 router.patch('/master-change-password/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
@@ -182,9 +181,5 @@ router.patch('/change-password/:id', authenticateToken, async (req, res) => {
 });
 
 
-
-
-
-router.get
 module.exports = router;
   
