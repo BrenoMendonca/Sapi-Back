@@ -12,6 +12,7 @@ SAPI é um sistema web construido para ser um repositório de Editais e projetos
 - Professor Daniel Almeida Chagas
 - Bolsista Breno Mendonça
 - Bolsista Ricardo Delgado
+- Emmanuel Vidal
 
 
 ## ✔️ Tecnologias utilizadas
@@ -26,21 +27,24 @@ SAPI é um sistema web construido para ser um repositório de Editais e projetos
 - ``Express``
 - ``Moogose``
 
-## 🛫 Como rodar o projeto
-- Execute o comando `npm start` para executar o projeto
-- Se o IP estiver conectado corretamente ao banco, ao inciar a mensagem será retornada ``Conectado ao banco``
-- Se você for administrador solicite as senhas para o coordenador do projeto 
-
 ## Instalação
 - Execute o comando `npm install` para baixar as dependencias do projeto
   
 ## 💾 Funcionalidades 
 - `Funcionalidade 1` `Cadastro de professores e coordenadores`: Concluido ✅
 - `Funcionalidade 2` `Login e validação de usuários`: Concluido ✅
-- `Funcionalidade 3` `Redefinição de senha`: Concluido ✅
-- `Funcionalidade 4` `Cadastro e consulta de editais para projetos de iniciação cientifica`: Concluido ✅
-- `Funcionalidade 5` `Cadastro e consulta de projetos de iniciação cientifica por parte dos professores envolvidos`: Concluido ✅
-- `Funcionalidade 6` `Fluxo de avaliação de projetos`: Em andamento 🚧
-- `Funcionalidade 7` `Adição e remoção de professores na submissão de editais`: Em andamento 🚧
-- `Funcionalidade 8` `Pesquisa de professores e editais`: Concluido ✅
+- `Funcionalidade 3` `Definição, edição e delação de professores como avaliadores do edital`: Concluido ✅
+- `Funcionalidade 4` `Redefinição de senha`: Concluido ✅
+- `Funcionalidade 5` `Cadastro, consulta e edição de editais para projetos de iniciação cientifica`: Concluido ✅
+- `Funcionalidade 6` `Cadastro e consulta de projetos de iniciação cientifica por parte dos professores envolvidos`: Concluido ✅
+- `Funcionalidade 7` `Cadastro, edição e avaliação de pacotes de requisitos para editais`: Concluido ✅
+- `Funcionalidade 8` `Submissão de projetos por professores em editais de inovação`: Concluido ✅
+- `Funcionalidade 9` `Pesquisa de professores e editais`: Concluido ✅
+
+## 🛫 Como rodar o projeto
+- Execute o comando `npm start` para executar o projeto
+- Se o IP estiver conectado corretamente ao banco, ao inciar a mensagem será retornada ``Conectado ao banco``
+- Se você for administrador solicite as senhas para o coordenador do projeto
+  
+
 
